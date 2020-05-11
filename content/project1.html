@@ -1,0 +1,411 @@
+---
+title: "Project 1"
+author: "Grace Oh (geo344)"
+date: "3/11/2020"
+output:
+  word_document: default
+  html_document: default
+  pdf_document: default
+---
+
+
+
+<pre class="r"><code>#Data Sets:
+adult_obese&lt;-read.csv(&quot;adult_obese.csv&quot;)
+glimpse(adult_obese)</code></pre>
+<pre><code>## Rows: 55
+## Columns: 4
+## $ Location    &lt;fct&gt; , National, Alabama, Alaska, Arizona, Arkansas, Californi…
+## $ Value       &lt;dbl&gt; NA, 28.9, 33.5, 29.7, 28.9, 35.9, 24.7, 21.3, 26.3, 30.7,…
+## $ X95..CI     &lt;fct&gt; , (28.6-29.2), (32.1-35.0), (27.8-31.7), (27.7-30.2), (33…
+## $ Sample.Size &lt;fct&gt; &quot;&quot;, &quot;425,875&quot;, &quot;8,190&quot;, &quot;4,142&quot;, &quot;13,849&quot;, &quot;4,886&quot;, &quot;8,02…</code></pre>
+<pre class="r"><code>data&lt;-read.csv(&quot;data.csv&quot;)
+glimpse(data)</code></pre>
+<pre><code>## Rows: 50
+## Columns: 5
+## $ State                          &lt;fct&gt; Massachusetts, Maryland, Colorado, Con…
+## $ Percent.Educational.Attainment &lt;dbl&gt; 38.2, 37.3, 35.9, 35.6, 34.5, 34.0, 33…
+## $ Percent.Peace.Index            &lt;dbl&gt; 59.92, 37.10, 49.48, 56.12, 47.38, 50.…
+## $ Percent.Above.Poverty.Rate     &lt;dbl&gt; 88.3, 89.6, 87.9, 89.2, 88.9, 88.2, 87…
+## $ Percent.Non.religious          &lt;int&gt; 67, 46, 53, 57, 45, 39, 66, 54, 67, 51…</code></pre>
+<pre class="r"><code>#Introduction: 
+
+## The two datasets I chose are &quot;adult_obese&quot; and &quot;data&quot;. The &quot;adult_obese&quot; dataset shows the percentage of the population that is obese in every state in 2014. There are four variables: &quot;Location&quot; (state), &quot;Value&quot; (Percentage of population considered obese), &quot;95% CI&quot; (confidence interval), &quot;Sample Size&quot; (sample size). This data was obtained from the Center of Disease Control. The &quot;data&quot; dataset shows four socioeconomic variables for every state in 2014. The variables in this dataset include &quot;State&quot; (state), &quot;Percent Educational Attainment&quot; (percentage of the population that have a Bachelor&#39;s degree or higher),&quot;Peace Index&quot; (determined by taking the inverse of violence/crimes in the area, a higher number indicates a more peaceful state), &quot;Percent Above Poverty Rate&quot; (percentage of households living above the poverty line), and &quot;Percent Non-religious&quot; (percentage of population that do not identify as highly religious). This data was obtained based on responses from the American Community Survey, Vision of Humanity, United States Census Bureau, and the Pew Research Center, respectively. 
+
+##These two datasets are interesting to me because the percentage of obesity in the United States is increasing. As a potential healthcare provider, I would like to look at the factors that are associated with obesity and am interested in looking at how the data differs state to state. I predict that there will be a negative correlation/association between percentage of the population that are considered obese and the percent above poverty rate. If an individual is making well above the poverty rate, they probably have a stable, high paying job, which allows them to have the money and time to buy organic and healthier foods. </code></pre>
+<pre class="r"><code>#Joining
+join&lt;-adult_obese%&gt;%inner_join(data, by=c(&quot;Location&quot;=&quot;State&quot;))</code></pre>
+<pre><code>## Warning: Column `Location`/`State` joining factors with different levels,
+## coercing to character vector</code></pre>
+<pre class="r"><code># I performed an inner join on my datasets to keep only the rows that have a match on the ID variables. By doing this, I dropped none of my observations in my &quot;data&quot; dataset and dropped 5 observations in my &quot;adult_obese&quot; dataset which were the U.S. territories. I dropped these observations because I am focusing on the 50 states. </code></pre>
+<pre class="r"><code>#Wrangling
+
+#dplyr functions
+#converting a numeric variable into categorical 
+joined&lt;- join%&gt;%rename(&quot;percentedu_attain&quot;= Percent.Educational.Attainment, &quot;percentabove_pov&quot; = Percent.Above.Poverty.Rate,&quot;percentpeace&quot;= Percent.Peace.Index, &quot;percentnon&quot;=Percent.Non.religious)
+
+summary(joined$`percentnon`)</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   23.00   37.50   46.00   45.30   51.75   67.00</code></pre>
+<pre class="r"><code>summary(joined$Value)</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   21.30   27.32   29.65   29.38   31.27   35.90</code></pre>
+<pre class="r"><code>summary(joined$`percentpeace`)</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   19.02   37.27   49.97   49.44   57.95   73.84</code></pre>
+<pre class="r"><code>summary(joined$`percentedu_attain`)</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   17.30   24.15   26.45   27.20   30.35   38.20</code></pre>
+<pre class="r"><code>summary(joined$`percentabove_pov`)</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   78.10   82.95   85.20   85.20   87.88   90.80</code></pre>
+<pre class="r"><code>#mutating newly made categorical variables into dataset
+joined &lt;- joined%&gt;%mutate(nonreligious_cat=case_when(percentnon&gt;51.75 ~ &quot;high&quot;,37&lt;=percentnon &amp; percentnon &lt;=51.75 ~ &quot;med&quot;, percentnon &lt;37.5 ~ &quot;low&quot; ))
+joined&lt;-joined%&gt;%mutate(percentpeace_cat=case_when(percentpeace&gt;57.95 ~ &quot;high&quot;, 37.27&lt;= percentpeace &amp; percentpeace &lt;= 57.95 ~ &quot;med&quot;, percentpeace &lt; 37.27 ~ &quot;low&quot;))
+
+#states in the middle 50% percent educational attainment
+joined%&gt;%filter(between(percentedu_attain, 24.15, 30.35))</code></pre>
+<pre><code>##          Location Value     X95..CI Sample.Size percentedu_attain percentpeace
+## 1          Alaska  29.7 (27.8-31.7)       4,142              26.6        44.98
+## 2         Arizona  28.9 (27.7-30.2)      13,849              25.6        35.66
+## 3      California  24.7 (23.5-25.9)       8,025              29.9        45.24
+## 4        Delaware  30.7 (28.6-32.8)       3,983              28.7        37.04
+## 5         Florida  26.2 (25.0-27.5)       9,156              25.3        32.70
+## 6         Georgia  30.5 (28.9-32.1)       5,844              27.5        39.20
+## 7          Hawaii  22.1 (20.7-23.5)       6,905              29.6        64.32
+## 8            Iowa  30.9 (29.6-32.3)       7,572              25.1        62.70
+## 9          Kansas  31.3 (30.3-32.2)      12,825              29.5        48.54
+## 10          Maine  28.2 (26.9-29.5)       8,705              26.9        73.84
+## 11       Michigan  30.7 (29.4-32.0)       8,024              24.6        46.12
+## 12       Missouri  30.2 (28.6-31.9)       6,695              25.2        35.90
+## 13        Montana  26.4 (24.9-27.9)       7,064              27.4        54.54
+## 14       Nebraska  30.2 (29.2-31.3)      21,130              27.4        61.46
+## 15     New Mexico  28.4 (27.0-30.0)       8,284              25.3        42.94
+## 16 North Carolina  29.7 (28.4-31.0)       6,621              26.5        45.72
+## 17   North Dakota  32.2 (30.5-34.0)       7,269              25.8        65.12
+## 18         Oregon  27.9 (26.3-29.6)       4,919              29.2        58.56
+## 19   Pennsylvania  30.2 (28.9-31.4)      10,374              26.4        52.50
+## 20 South Carolina  32.1 (30.9-33.3)      10,393              24.3        36.44
+## 21   South Dakota  29.8 (27.9-31.8)       6,960              25.1        53.64
+## 22          Texas  31.9 (30.6-33.3)      14,058              25.5        35.96
+## 23           Utah  25.7 (24.9-26.6)      13,965              28.5        65.54
+## 24      Wisconsin  31.2 (29.6-32.8)       6,655              25.7        53.96
+##    percentabove_pov percentnon nonreligious_cat percentpeace_cat
+## 1              88.6         55             high              med
+## 2              81.8         47              med              low
+## 3              83.6         51              med              med
+## 4              87.0         48              med              low
+## 5              83.4         46              med              low
+## 6              81.6         34              low              med
+## 7              88.5         53             high             high
+## 8              87.7         45              med             high
+## 9              86.5         45              med              med
+## 10             86.0         66             high             high
+## 11             83.8         47              med              med
+## 12             84.5         40              med              low
+## 13             84.8         52             high              med
+## 14             87.7         46              med             high
+## 15             79.4         43              med              med
+## 16             82.8         35              low              med
+## 17             88.9         47              med             high
+## 18             83.6         52             high             high
+## 19             86.4         47              med              med
+## 20             82.1         30              low              low
+## 21             85.9         41              med              med
+## 22             82.8         36              low              low
+## 23             88.2         36              low             high
+## 24             86.8         55             high              med</code></pre>
+<pre class="r"><code>#states in the middle 50% percent above poverty (relative to other states)
+joined%&gt;%filter(between(percentabove_pov, 82.95, 87.88))</code></pre>
+<pre><code>##        Location Value     X95..CI Sample.Size percentedu_attain percentpeace
+## 1    California  24.7 (23.5-25.9)       8,025              29.9        45.24
+## 2      Delaware  30.7 (28.6-32.8)       3,983              28.7        37.04
+## 3       Florida  26.2 (25.0-27.5)       9,156              25.3        32.70
+## 4         Idaho  28.9 (27.1-30.8)       5,125              23.9        55.48
+## 5      Illinois  29.3 (27.6-31.1)       4,835              30.6        42.16
+## 6       Indiana  32.7 (31.6-34.0)      10,773              22.5        53.10
+## 7          Iowa  30.9 (29.6-32.3)       7,572              25.1        62.70
+## 8        Kansas  31.3 (30.3-32.2)      12,825              29.5        48.54
+## 9         Maine  28.2 (26.9-29.5)       8,705              26.9        73.84
+## 10     Michigan  30.7 (29.4-32.0)       8,024              24.6        46.12
+## 11     Missouri  30.2 (28.6-31.9)       6,695              25.2        35.90
+## 12      Montana  26.4 (24.9-27.9)       7,064              27.4        54.54
+## 13     Nebraska  30.2 (29.2-31.3)      21,130              27.4        61.46
+## 14       Nevada  27.7 (25.4-30.1)       3,555              21.8        32.64
+## 15     New York  27.0 (25.6-28.5)       6,325              32.4        45.56
+## 16         Ohio  32.6 (31.2-34.1)      10,313              24.1        53.44
+## 17     Oklahoma  33.0 (31.7-34.3)       8,009              22.7        37.78
+## 18       Oregon  27.9 (26.3-29.6)       4,919              29.2        58.56
+## 19 Pennsylvania  30.2 (28.9-31.4)      10,374              26.4        52.50
+## 20 Rhode Island  27.0 (25.4-28.6)       5,969              30.5        64.24
+## 21 South Dakota  29.8 (27.9-31.8)       6,960              25.1        53.64
+## 22      Vermont  24.8 (23.5-26.1)       6,068              33.1        69.06
+## 23   Washington  27.3 (26.0-28.5)       9,444              31.0        64.36
+## 24    Wisconsin  31.2 (29.6-32.8)       6,655              25.7        53.96
+##    percentabove_pov percentnon nonreligious_cat percentpeace_cat
+## 1              83.6         51              med              med
+## 2              87.0         48              med              low
+## 3              83.4         46              med              low
+## 4              85.2         49              med              med
+## 5              85.7         49              med              med
+## 6              84.8         46              med              med
+## 7              87.7         45              med             high
+## 8              86.5         45              med              med
+## 9              86.0         66             high             high
+## 10             83.8         47              med              med
+## 11             84.5         40              med              low
+## 12             84.8         52             high              med
+## 13             87.7         46              med             high
+## 14             84.6         51              med              low
+## 15             84.1         54             high              med
+## 16             84.2         42              med              med
+## 17             83.4         34              low              med
+## 18             83.6         52             high             high
+## 19             86.4         47              med              med
+## 20             85.2         51              med             high
+## 21             85.9         41              med              med
+## 22             87.8         66             high             high
+## 23             86.8         55             high             high
+## 24             86.8         55             high              med</code></pre>
+<pre class="r"><code>#obesity values of states considered &quot;low&quot; in the percent peace index in descending order
+joined%&gt;%filter(percentpeace_cat==&quot;low&quot;)%&gt;%select(Value, Location)%&gt;%arrange(desc(Value))</code></pre>
+<pre><code>##    Value       Location
+## 1   35.9       Arkansas
+## 2   35.5    Mississippi
+## 3   34.9      Louisiana
+## 4   33.5        Alabama
+## 5   32.1 South Carolina
+## 6   31.9          Texas
+## 7   31.2      Tennessee
+## 8   30.7       Delaware
+## 9   30.2       Missouri
+## 10  29.6       Maryland
+## 11  28.9        Arizona
+## 12  27.7         Nevada
+## 13  26.2        Florida</code></pre>
+<pre class="r"><code>#percentage peace index of states that have a small population considering themselves non religious
+joined%&gt;%filter(nonreligious_cat==&quot;low&quot;)%&gt;%select(percentpeace_cat,Location)%&gt;%arrange(desc(percentpeace_cat))</code></pre>
+<pre><code>##    percentpeace_cat       Location
+## 1               med        Georgia
+## 2               med North Carolina
+## 3               med       Oklahoma
+## 4               med  West Virginia
+## 5               low        Alabama
+## 6               low       Arkansas
+## 7               low      Louisiana
+## 8               low    Mississippi
+## 9               low South Carolina
+## 10              low      Tennessee
+## 11              low          Texas
+## 12             high           Utah</code></pre>
+<pre class="r"><code>#states that have a greater obesity value than the median
+joined%&gt;%filter(Value&gt;29.38)%&gt;%select(Location, Value)%&gt;%arrange(Value)</code></pre>
+<pre><code>##          Location Value
+## 1         Wyoming  29.5
+## 2        Maryland  29.6
+## 3          Alaska  29.7
+## 4  North Carolina  29.7
+## 5    South Dakota  29.8
+## 6        Missouri  30.2
+## 7        Nebraska  30.2
+## 8    Pennsylvania  30.2
+## 9         Georgia  30.5
+## 10       Delaware  30.7
+## 11       Michigan  30.7
+## 12           Iowa  30.9
+## 13      Tennessee  31.2
+## 14      Wisconsin  31.2
+## 15         Kansas  31.3
+## 16       Kentucky  31.6
+## 17          Texas  31.9
+## 18 South Carolina  32.1
+## 19   North Dakota  32.2
+## 20           Ohio  32.6
+## 21        Indiana  32.7
+## 22       Oklahoma  33.0
+## 23        Alabama  33.5
+## 24      Louisiana  34.9
+## 25    Mississippi  35.5
+## 26  West Virginia  35.7
+## 27       Arkansas  35.9</code></pre>
+<pre class="r"><code>#mean and standard deviations of states in each category of the percentage peace index
+joined%&gt;%group_by(percentpeace_cat)%&gt;%summarise(mean_value=mean(Value, na.rm = T), sd_value=sd(Value, na.rm=T))</code></pre>
+<pre><code>## # A tibble: 3 x 3
+##   percentpeace_cat mean_value sd_value
+##   &lt;chr&gt;                 &lt;dbl&gt;    &lt;dbl&gt;
+## 1 high                   27.3     2.87
+## 2 low                    31.4     2.98
+## 3 med                    29.4     3.02</code></pre>
+<pre class="r"><code>#Summary Statistics 
+
+#correlation matrices between numerical variables
+joined%&gt;%summarise(cor(percentedu_attain, Value))</code></pre>
+<pre><code>##   cor(percentedu_attain, Value)
+## 1                    -0.7517604</code></pre>
+<pre class="r"><code>joined%&gt;%summarise(cor(percentabove_pov, Value))</code></pre>
+<pre><code>##   cor(percentabove_pov, Value)
+## 1                   -0.5341815</code></pre>
+<pre class="r"><code>joined%&gt;%summarise(cor(percentpeace, Value))</code></pre>
+<pre><code>##   cor(percentpeace, Value)
+## 1               -0.4201228</code></pre>
+<pre class="r"><code>joined%&gt;%summarise(cor(percentnon, Value))</code></pre>
+<pre><code>##   cor(percentnon, Value)
+## 1             -0.6990557</code></pre>
+<pre class="r"><code>#mean and standard deviations percent peace indexes on nonrelgious category
+joined%&gt;%group_by(nonreligious_cat)%&gt;%summarise(mean_percentpeace=mean(percentpeace, na.rm=T), sd_percentpeace=sd(percentpeace, na.rm=T))</code></pre>
+<pre><code>## # A tibble: 3 x 3
+##   nonreligious_cat mean_percentpeace sd_percentpeace
+##   &lt;chr&gt;                        &lt;dbl&gt;           &lt;dbl&gt;
+## 1 high                          58.7            9.13
+## 2 low                           39.7           11.8 
+## 3 med                           49.3           10.5</code></pre>
+<pre class="r"><code>#mean and standard deviations percent educational attainment on nonrelgious category
+joined%&gt;%group_by(nonreligious_cat, percentpeace_cat)%&gt;%summarise(mean_percentedu=mean(percentedu_attain, na.rm=T))</code></pre>
+<pre><code>## # A tibble: 8 x 3
+## # Groups:   nonreligious_cat [3]
+##   nonreligious_cat percentpeace_cat mean_percentedu
+##   &lt;chr&gt;            &lt;chr&gt;                      &lt;dbl&gt;
+## 1 high             high                        31.4
+## 2 high             med                         30.6
+## 3 low              high                        28.5
+## 4 low              low                         22.1
+## 5 low              med                         23.5
+## 6 med              high                        28.1
+## 7 med              low                         27.3
+## 8 med              med                         26.8</code></pre>
+<pre class="r"><code>#min, max, Q3, sd, median, and var of numeric variables
+joined%&gt;%summarise_if(is.numeric, list(min=min, max=max), na.rm=T)</code></pre>
+<pre><code>##   Value_min percentedu_attain_min percentpeace_min percentabove_pov_min
+## 1      21.3                  17.3            19.02                 78.1
+##   percentnon_min Value_max percentedu_attain_max percentpeace_max
+## 1             23      35.9                  38.2            73.84
+##   percentabove_pov_max percentnon_max
+## 1                 90.8             67</code></pre>
+<pre class="r"><code>joined%&gt;%summarise_if(is.numeric, list(Q3=quantile), probs=.75, na.rm=T)</code></pre>
+<pre><code>##   Value_Q3 percentedu_attain_Q3 percentpeace_Q3 percentabove_pov_Q3
+## 1   31.275                30.35           57.95              87.875
+##   percentnon_Q3
+## 1         51.75</code></pre>
+<pre class="r"><code>joined%&gt;%summarise_if(is.numeric, list(sd=sd), na.rm=T)</code></pre>
+<pre><code>##   Value_sd percentedu_attain_sd percentpeace_sd percentabove_pov_sd
+## 1 3.276232             4.795702        12.29951            3.068769
+##   percentnon_sd
+## 1      10.74234</code></pre>
+<pre class="r"><code>joined%&gt;%summarise_if(is.numeric, list(median=median), probs=.5, na.rm=T)</code></pre>
+<pre><code>##   Value_median percentedu_attain_median percentpeace_median
+## 1        29.65                    26.45               49.97
+##   percentabove_pov_median percentnon_median
+## 1                    85.2                46</code></pre>
+<pre class="r"><code>joined%&gt;%summarise_if(is.numeric, list(var=var), na.rm=T)</code></pre>
+<pre><code>##   Value_var percentedu_attain_var percentpeace_var percentabove_pov_var
+## 1   10.7337              22.99876         151.2778             9.417343
+##   percentnon_var
+## 1        115.398</code></pre>
+<pre class="r"><code>#mean obesity value of nation
+joined%&gt;%summarize(mean(Value, na.rm=T), n(), n_distinct(Location))</code></pre>
+<pre><code>##   mean(Value, na.rm = T) n() n_distinct(Location)
+## 1                 29.376  50                   50</code></pre>
+<pre class="r"><code>## I used the &quot;summary&quot; function on all my numerical variables to see the min, 1st quartile, median, mean, 3rd quartile, and max. I used the results to set the boundaries for my new categorical variables. I assigned each observation to either &quot;high&quot;, &quot;med&quot;, &quot;low&quot; and mutated it into my &quot;join&quot; data as categorical variables.I then used my &quot;filter&quot; and &quot;between&quot; function to show the states that had percent educational attainment values between 24.15% (Q1) and 30.35% (Q3) to show the states in the middle 50% of the nation that have a bachelor&#39;s degree or higher. Similarily,  I used my &quot;filter&quot; and &quot;between&quot; function to show the states that had a percent above poverty values betweem 82.95% (Q1) and 87.88% (Q3) to show the middle 50% of the nation that live above the poverty level.I then filtered out states from the &quot;low&quot; category of the percent peace index and arranged their obesity percentage values in descending order. This shows that Arkansas has the highest percentage of people considered obese from the low percent peace index states with a 35.9% obesity value and Florida with the lowest percentage with 26.2%. Then, I filtered out the states that have low proportion of the population that considered themselves non religious and displayed their percent peace index. Most states that have low proportion of the population that consider themselves non religious have either a low or medium percent peace index, with the exception of Utah, which is high. I then filtered out all the states(27) that had a higher value of obesity than the median (29.38%). Then, I took the mean and standard deviation of the states in the low, med, and high percent peace index categories. 
+
+#### For my sumamry statistics, I first performed correlation matrices on each of my numeric vairables to each other. After doing so, I saw that there was the highest negative correlation between percent educational attainment and obesity value (-0.7517604) and weakest negative correlation between the percent peace index and obesity value (-0.4201228). I then found the mean and standard deviation of the percentage peace indexes forn each category of the nonreligious category and found that the states with the highest nonreligious percentages had the highest mean and lowest standard deviation of percent peace index. I then compared the 3 categories of the nonreligious variable and the 3 categories of the percent peace index variable and found the mean percentage educational attainment for these. States with the highest nonreligous population and percent peace index showed the highest mean percent educational attainment (31.42857%). Likewise, states with the lowest religious population and percent peace index showed the lowest mean percent educational attainment (22.1%). I then found the min, max, third quartile, median, and variance of all my numeric variables. I also found the mean percentage of the population considered obese for the nation and found it to be 29.376%.  </code></pre>
+<pre class="r"><code>#Tidying: 
+joined%&gt;%group_by(percentpeace_cat, nonreligious_cat)%&gt;%summarise_at(&quot;Value&quot;, min)%&gt;%pivot_wider(names_from = nonreligious_cat, values_from = Value)</code></pre>
+<pre><code>## # A tibble: 3 x 4
+## # Groups:   percentpeace_cat [3]
+##   percentpeace_cat  high   low   med
+##   &lt;chr&gt;            &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+## 1 high              22.1  25.7  27  
+## 2 low               NA    31.2  26.2
+## 3 med               21.3  29.7  24.7</code></pre>
+<pre class="r"><code>#Because my data was already tidy, I used pivot_wider to group by my two categorical variables (percentpeace_cat and nonreligious_cat). Then, I extracted data from &quot;Value&quot;(percentage considered obese) to my categorical variables. </code></pre>
+<pre class="r"><code>#Visualizing
+#Correlation Heatmap
+joined%&gt;%select_if(is.numeric)%&gt;%cor%&gt;%as.data.frame%&gt;%
+  rownames_to_column%&gt;%pivot_longer(-1)%&gt;%
+  ggplot(aes(rowname, name, fill=value))+geom_tile()+
+  geom_text(aes(label=round(value,1)))+
+  xlab(&quot;&quot;)+ylab(&quot;&quot;)+
+  theme(axis.text.x = element_text(angle = 90, hjust=1))+
+  scale_fill_gradient2(low=&quot;red&quot;,high=&quot;blue&quot;)+
+  ggtitle(&quot;Correlation Heatmap&quot;)</code></pre>
+<p><img src="/project1_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<pre class="r"><code>## The strongest correlation on my heatmap is the negative correlation between percentage educational attainment and value (-0.8). This shows that the higher the percentage of the population that has a bachelor&#39;s degree or higher, the lower the obesity value. I was suprised that this correlation was higher, albeit slightly, than the correlation between percent educational attainment and percent above poverty level (-0.7). 
+
+## Aside from sample size, the variables that had the weakest correlations were the correlations between percent peace index and percent educational attainment (0.4) and percent obese and percent peace index (-0.4). This represents that these is a weak association between one&#39;s education level and the peacefulness of the state. Similarily, there is a weak association between the state&#39;s peace level and percent obesity of that state. </code></pre>
+<pre class="r"><code>ggplot(joined, aes(x=reorder(Location,Value), y= Value, fill=nonreligious_cat))+ theme_linedraw()+
+  geom_bar(stat=&quot;summary&quot;, fun.y=&quot;mean&quot;)+
+  scale_fill_discrete()+
+  theme(axis.text.x = element_text(angle = 90, hjust=1, size=6))+
+  ggtitle(&quot;Percentage Obese vs. Location vs. Non religious&quot;)+
+    scale_y_continuous(breaks = seq(0,36, 3))</code></pre>
+<pre><code>## Warning: Ignoring unknown parameters: fun.y</code></pre>
+<pre><code>## No summary function supplied, defaulting to `mean_se()`</code></pre>
+<p><img src="/project1_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+<pre class="r"><code># This bar shows that most of the states with the greatest obesity percentage values have a low percentage of the population that considers themselves nonreligious. Conversely, most of the states with the lowest obesity percentage have a high percentage of the population that considers themselves relgious. Similarly, states with the middle obesity percentage values have middle nonrelgious percentages. The graph also shows Arkansas as having the highest percentage obese value and Colorado having the smallest percentage obese value. </code></pre>
+<pre class="r"><code>ggplot(joined, aes(percentpeace,Value, color=nonreligious_cat))+
+  geom_point(size=2)+
+  ggtitle(&quot;Percentage Obese vs. Percent Peace Index vs. Non religious&quot;)+
+  scale_color_hue()+
+  theme_linedraw()</code></pre>
+<p><img src="/project1_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+<pre class="r"><code># From this scatterplot, no visible trend or correlation is visible between the obestiy percentage and the percent peace index. This implies that the peacefulness of a state is not associated with the percent obesity of the state. However, there is a trend between percent obese and nonreligious percentages. The plot shows that states with a low nonrelgious population typically have a high obesity percentage, and vice versa. Also, there appears to be a small correlation between the nonreligious percentage and percent peace index. States with a low nonreligous percentage typically have a lower peace index and states with a higher percentage of a nonreligious population correlate to a higher peace index, which I found interesting. </code></pre>
+<pre class="r"><code>#Dimentionality Reduction
+library(ggplot2)
+library(tidyverse)
+library(cluster)
+#removing categorical variables 
+joined2&lt;-joined%&gt;%select(-Location, -X95..CI, -Sample.Size, -nonreligious_cat,-percentpeace_cat)
+#Cluster analysis 
+pam&lt;-joined2%&gt;%scale%&gt;%pam(k=2)
+pam</code></pre>
+<pre><code>## Medoids:
+##      ID     Value percentedu_attain percentpeace percentabove_pov percentnon
+## [1,] 40 0.8314429        -0.6055422   -1.0568880        -1.009525 -1.4242701
+## [2,] 38 0.2515084        -0.1676501    0.2488555         0.391688  0.1582522
+## Clustering vector:
+##  [1] 1 2 1 1 2 2 2 2 2 1 2 2 2 2 2 2 1 1 2 2 2 2 2 1 1 2 2 2 2 2 1 2 1 2 2 1 2 2
+## [39] 2 1 2 1 1 2 2 2 2 1 2 2
+## Objective function:
+##    build     swap 
+## 1.651644 1.651644 
+## 
+## Available components:
+##  [1] &quot;medoids&quot;    &quot;id.med&quot;     &quot;clustering&quot; &quot;objective&quot;  &quot;isolation&quot; 
+##  [6] &quot;clusinfo&quot;   &quot;silinfo&quot;    &quot;diss&quot;       &quot;call&quot;       &quot;data&quot;</code></pre>
+<pre class="r"><code>pamclust &lt;- joined2%&gt;%mutate(cluster = as.factor(pam$clustering))
+pamclust%&gt;% ggplot(aes(percentedu_attain, Value, color = cluster)) + geom_point()</code></pre>
+<p><img src="/project1_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
+<pre class="r"><code>#clusters in PAM
+sil_width&lt;-vector()
+for (i in 2:10) {
+  pamfit&lt;-joined2%&gt;%scale%&gt;%pam(i)
+  sil_width[i]&lt;-pamfit$silinfo$avg.width
+}
+ggplot()+geom_line(aes(x=1:10, y=sil_width))+scale_x_continuous(name =&quot;k&quot;,breaks = 1:10)</code></pre>
+<pre><code>## Warning: Removed 1 row(s) containing missing values (geom_path).</code></pre>
+<p><img src="/project1_files/figure-html/unnamed-chunk-10-2.png" width="672" /></p>
+<pre class="r"><code>#silhouette plot 
+plot(pam, which=2)</code></pre>
+<p><img src="/project1_files/figure-html/unnamed-chunk-10-3.png" width="672" /></p>
+<pre class="r"><code>#final medoids 
+joined2[pam$id.med,]</code></pre>
+<pre><code>##    Value percentedu_attain percentpeace percentabove_pov percentnon
+## 40  32.1              24.3        36.44             82.1         30
+## 38  30.2              26.4        52.50             86.4         47</code></pre>
+<pre class="r"><code>#visualization of all numeric variables 
+library(GGally)</code></pre>
+<pre><code>## Registered S3 method overwritten by &#39;GGally&#39;:
+##   method from   
+##   +.gg   ggplot2</code></pre>
+<pre><code>## 
+## Attaching package: &#39;GGally&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:dplyr&#39;:
+## 
+##     nasa</code></pre>
+<pre class="r"><code>joined2 %&gt;% mutate(cluster=as.factor(pam$clustering)) %&gt;% ggpairs(columns = 2:6, aes(color=cluster))</code></pre>
+<pre><code>## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</code></pre>
+<pre><code>## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</code></pre>
+<p><img src="/project1_files/figure-html/unnamed-chunk-10-4.png" width="672" /></p>
+<pre class="r"><code>#First, I removed the categorical variables on my data to perfrom a cluster analysis soley on my numeric variables. I determined the number of clusters I should use as 2 (greatest sil_width). Then, I performed a cluster analysis on my data. I also used a silhouette plot to see how well my variables fit into their clusters. My average silhouette width of 0.39, which represetns a weak structure and the potential of artifical data. For my visualization, I ran a ggpairs to compare all my data. From here, we can see that there is the strongest correlation between percent above poverty and percent educational attainment (0.678). The weakest correlation is between the percent peace index and percent educational attainment (0.358). The two distincts clusters in the percent educational attainment and percent peace index show the states with a lower proportion of the population with a bachelor&#39;s degree or higher and another cluster with states with a higher proportion of the population with a bachelor&#39;s degree. Also, there are two distinct clusters of the percent peace index and percent above the poverty rate. However, there is not distinct cluster for percent above poverty rate and percent nonrelgious. </code></pre>
