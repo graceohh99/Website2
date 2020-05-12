@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Python on Portfolio</title>
+    <link>/categories/python/</link>
+    <description>Recent content in Python on Portfolio</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-US</language>
+    <lastBuildDate>Tue, 12 May 2020 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="/categories/python/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Python and R</title>
+      <link>/blog/python-and-r/</link>
+      <pubDate>Tue, 12 May 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/blog/python-and-r/</guid>
+      <description>Python and R are both highly respected languages, both having their strengths and weaknesses. Python shows a slightly cleaner structure, is faster, and more popular, though takes some getting used to. Conversely, R is very useful for statistical analysis, easier to learn, but is slower and has a clunkier structure.
+Though two different languages, we can use R and Python together in R studio and make them essentially “talk to each other” using the “reticulate” package.</description>
+    </item>
+    
+    <item>
+      <title>Python and R</title>
+      <link>/2020/05/11/python-and-r/</link>
+      <pubDate>Mon, 11 May 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/2020/05/11/python-and-r/</guid>
+      <description>###Introduction
+Python and R are both highly respected languages, both having their strengths and weaknesses. Python shows a slightly cleaner structure, is faster, and more popular, though takes some getting used to. Conversely R is very useful for statistical analysis, easier to learn, but is slower and has a clunkier structure.
+Though two different languages, we can use R and Python together in R studio and make them essentially &amp;ldquo;talk to each other&amp;rdquo;.</description>
+    </item>
+    
+  </channel>
+</rss>

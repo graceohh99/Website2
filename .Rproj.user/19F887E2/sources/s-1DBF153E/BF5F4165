@@ -1,0 +1,25 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1589276187940.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "BF5F4165",
+    "lastKnownWriteTime" : 1589281655,
+    "last_content_update" : 1589281655896,
+    "path" : "~/Desktop/R final project/Website/Website/content/blog/2020-05-12-python-and-r.Rmd",
+    "project_path" : "content/blog/2020-05-12-python-and-r.Rmd",
+    "properties" : {
+        "cursorPosition" : "25,119",
+        "scrollLine" : "13"
+    },
+    "read_only" : false,
+    "read_only_alternatives" : [
+    ],
+    "relative_order" : 6,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_markdown"
+}

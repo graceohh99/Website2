@@ -15,6 +15,7 @@ install.packages("sandwich")
 install.packages("plotROC")
 install.packages("glmnet")
 install.packages("GGally")
+install.packages("reticulate")
 
 cd ~/Desktop/R final project/Website/Website #if you haven't already
 

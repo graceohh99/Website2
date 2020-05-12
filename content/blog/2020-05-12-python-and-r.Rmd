@@ -1,0 +1,38 @@
+---
+title: Python and R
+author: Grace Oh
+date: '2020-05-12'
+slug: python-and-r
+categories:
+  - R
+  - Python
+  - Development
+tags: []
+description: ''
+---
+Python and R are both highly respected languages, both having their strengths and weaknesses. Python shows a slightly cleaner structure, is faster, and more popular, though takes some getting used to. Conversely, R is very useful for statistical analysis, easier to learn, but is slower and has a clunkier structure.
+
+![](/blog/2020-05-12-python-and-r_files/imager.jpg){width=200px height=200px}
+
+Though two different languages, we can use R and Python together in R studio and make them essentially "talk to each other" using the "reticulate" package. 
+
+First, we will load the "reticulate" package in R and define something ("Hello") into a R defined object (hi).
+```{r}
+#R code chunk
+library(reticulate)
+hi<-"Hello"
+```
+
+Here, we will define "my name is" into a Python defined object (hi). Then, we can grab our R-defined object with python. 
+Note that even though both objects are defined with the same name, there is no conflict!
+```{python}
+#Python code chunk 
+hi="my name is"
+print(r.hi,hi)
+```
+
+Here, we can grab our Python-defined object with a R code chunk. 
+```{r}
+#R code chunk
+cat(c(hi,py$hi))
+```

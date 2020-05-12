@@ -6,20 +6,30 @@
     <description>Recent content in R on Portfolio</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-US</language>
-    <lastBuildDate>Thu, 23 Jul 2015 21:13:14 -0500</lastBuildDate>
+    <lastBuildDate>Tue, 12 May 2020 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/categories/r/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
-      <title>Hello R Markdown</title>
-      <link>/blog/2015-07-23-r-rmarkdown/</link>
-      <pubDate>Thu, 23 Jul 2015 21:13:14 -0500</pubDate>
+      <title>Python and R</title>
+      <link>/blog/python-and-r/</link>
+      <pubDate>Tue, 12 May 2020 00:00:00 +0000</pubDate>
       
-      <guid>/blog/2015-07-23-r-rmarkdown/</guid>
-      <description>R Markdown This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see http://rmarkdown.rstudio.com.
-You can embed an R code chunk like this:
-summary(cars) ## speed dist ## Min. : 4.0 Min. : 2.00 ## 1st Qu.:12.0 1st Qu.: 26.00 ## Median :15.0 Median : 36.00 ## Mean :15.4 Mean : 42.98 ## 3rd Qu.</description>
+      <guid>/blog/python-and-r/</guid>
+      <description>Python and R are both highly respected languages, both having their strengths and weaknesses. Python shows a slightly cleaner structure, is faster, and more popular, though takes some getting used to. Conversely, R is very useful for statistical analysis, easier to learn, but is slower and has a clunkier structure.
+Though two different languages, we can use R and Python together in R studio and make them essentially “talk to each other” using the “reticulate” package.</description>
+    </item>
+    
+    <item>
+      <title>Python and R</title>
+      <link>/2020/05/11/python-and-r/</link>
+      <pubDate>Mon, 11 May 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/2020/05/11/python-and-r/</guid>
+      <description>###Introduction
+Python and R are both highly respected languages, both having their strengths and weaknesses. Python shows a slightly cleaner structure, is faster, and more popular, though takes some getting used to. Conversely R is very useful for statistical analysis, easier to learn, but is slower and has a clunkier structure.
+Though two different languages, we can use R and Python together in R studio and make them essentially &amp;ldquo;talk to each other&amp;rdquo;.</description>
     </item>
     
   </channel>
