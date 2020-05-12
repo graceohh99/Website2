@@ -41,5 +41,4 @@ theme = "hugo-sustain"
   identifier = "resume"
   weight = 300
   url = "/resume/"
-
-
+  

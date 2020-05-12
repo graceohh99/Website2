@@ -1,18 +1,18 @@
 {
     "collab_server" : "",
     "contents" : "",
-    "created" : 1589235625140.000,
+    "created" : 1589247683329.000,
     "dirty" : false,
     "encoding" : "UTF-8",
     "folds" : "",
     "hash" : "0",
-    "id" : "FE611420",
-    "lastKnownWriteTime" : 1589239333,
-    "last_content_update" : 1589239333115,
-    "path" : "~/Desktop/R final project/Website/Website/content/projects.md",
-    "project_path" : "content/projects.md",
+    "id" : "D107FEB1",
+    "lastKnownWriteTime" : 1589247639,
+    "last_content_update" : 1589247639,
+    "path" : "~/Desktop/R final project/Website/Website/content/blog/blog.R",
+    "project_path" : "content/blog/blog.R",
     "properties" : {
-        "cursorPosition" : "13,29",
+        "cursorPosition" : "6,3",
         "scrollLine" : "0"
     },
     "read_only" : false,
@@ -21,5 +21,5 @@
     "relative_order" : 6,
     "source_on_save" : false,
     "source_window" : "",
-    "type" : "markdown"
+    "type" : "r_source"
 }

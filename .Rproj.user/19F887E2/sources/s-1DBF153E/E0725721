@@ -2,18 +2,18 @@
     "collab_server" : "",
     "contents" : "",
     "created" : 1589232310536.000,
-    "dirty" : false,
+    "dirty" : true,
     "encoding" : "UTF-8",
     "folds" : "",
     "hash" : "0",
     "id" : "E0725721",
-    "lastKnownWriteTime" : 1589239543,
-    "last_content_update" : 1589239543754,
+    "lastKnownWriteTime" : 1589247122,
+    "last_content_update" : 1589247155691,
     "path" : "~/Desktop/R final project/Website/Website/config.toml",
     "project_path" : "config.toml",
     "properties" : {
-        "cursorPosition" : "10,33",
-        "scrollLine" : "0"
+        "cursorPosition" : "43,2",
+        "scrollLine" : "13"
     },
     "read_only" : false,
     "read_only_alternatives" : [
